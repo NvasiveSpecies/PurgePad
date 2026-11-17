@@ -54,17 +54,16 @@ jobs:
         run: .\PurgePad\PurgePad.exe --screenshot-test
 
       - name: GUI interaction test on Windows
-        env:
-          PURGEPAD_DUP_FOLDER: $env:TEMP\dup_test
-          PURGEPAD_ORG_FOLDER: $env:TEMP\org_test
         run: |
-          pip install pyautogui
+          python -m pip install pyautogui pillow
           New-Item -ItemType Directory -Force -Path $env:TEMP\dup_test | Out-Null
           New-Item -ItemType Directory -Force -Path $env:TEMP\org_test | Out-Null
           "hello" | Out-File $env:TEMP\dup_test\a.txt
           Copy-Item $env:TEMP\dup_test\a.txt $env:TEMP\dup_test\b.txt
           "x" | Out-File $env:TEMP\org_test\photo.jpg
           "y" | Out-File $env:TEMP\org_test\note.txt
+          $env:PURGEPAD_DUP_FOLDER = "$env:TEMP\dup_test"
+          $env:PURGEPAD_ORG_FOLDER = "$env:TEMP\org_test"
           python gui_test.py .\PurgePad\PurgePad.exe screenshots-win
 
       - name: Upload Windows GUI test screenshots

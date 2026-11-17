@@ -19,6 +19,19 @@ def shot(name):
     path = str(OUT / name)
     if sys.platform == "darwin":
         subprocess.run(["screencapture", "-x", path], check=False)
+    elif sys.platform == "win32":
+        ps = (
+            "Add-Type -AssemblyName System.Windows.Forms; "
+            "Add-Type -AssemblyName System.Drawing; "
+            "$b=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds; "
+            "$i=New-Object System.Drawing.Bitmap($b.Width,$b.Height); "
+            "$g=[System.Drawing.Graphics]::FromImage($i); "
+            "$g.CopyFromScreen($b.Location,[System.Drawing.Point]::Empty,$b.Size); "
+            f"$i.Save('{path}',[System.Drawing.Imaging.ImageFormat]::Png)"
+        )
+        subprocess.run(
+            ["powershell", "-NoProfile", "-Command", ps], check=False
+        )
     else:
         pyautogui.screenshot(path)
 
