@@ -252,6 +252,9 @@ class ToolTab(tk.Frame):
         self.output.config(state="disabled")
         self.show("Running " + target.name + "...\n")
         try:
+            flags = 0
+            if sys.platform == "win32":
+                flags = subprocess.CREATE_NO_WINDOW
             self.process = subprocess.Popen(
                 command,
                 stdin=subprocess.PIPE,
@@ -260,6 +263,7 @@ class ToolTab(tk.Frame):
                 text=True,
                 bufsize=1,
                 cwd=str(self.script.parent),
+                creationflags=flags,
             )
         except OSError as error:
             self.show("Could not start it: " + str(error))
