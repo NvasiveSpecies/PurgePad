@@ -53,9 +53,22 @@ def answer(text):
     time.sleep(0.5)
     pyautogui.click(400, 585 + Y_OFF)
     time.sleep(0.5)
-    if text:
-        pyautogui.typewrite(text, interval=0.08)
-    pyautogui.press("enter")
+    if sys.platform == "darwin":
+        if text:
+            subprocess.run(
+                ["osascript", "-e",
+                 f'tell application "System Events" to keystroke "{text}"'],
+                check=False,
+            )
+        subprocess.run(
+            ["osascript", "-e",
+             'tell application "System Events" to key code 36'],
+            check=False,
+        )
+    else:
+        if text:
+            pyautogui.typewrite(text, interval=0.08)
+        pyautogui.press("enter")
     time.sleep(2)
 
 
