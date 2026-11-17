@@ -59,6 +59,7 @@ jobs:
           python gui_test.py build/dist-gui/PurgePad.app/Contents/MacOS/PurgePad screenshots-mac
 
       - name: Upload Mac GUI test screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: PurgePad-Mac-GUI-Test

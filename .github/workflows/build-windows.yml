@@ -66,6 +66,7 @@ jobs:
           python gui_test.py .\PurgePad\PurgePad.exe screenshots-win
 
       - name: Upload Windows GUI test screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: PurgePad-Windows-GUI-Test
