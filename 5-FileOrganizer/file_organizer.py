@@ -1,68 +1,41 @@
-#!/usr/bin/env python3
-"""Downloads and Desktop Organizer - Tool 5.
-
-Sorts the loose files in Downloads or on
-your Desktop into folders by type: Images,
-Documents, Videos, Music, Archives, Code,
-and Others.
-
-How to run:
-    Windows: py file_organizer.py
-    Mac / Linux: python3 file_organizer.py
-
-Safety:
-    - Shows a preview first, asks you to
-      type yes before moving anything.
-    - Moves files only, never deletes them.
-    - Only moves top-level files, it leaves
-      folders alone.
-    - Skips files still downloading:
-      .crdownload, .part, .partial, .tmp
-    - If a file with the same name is already
-      there, it adds (1), (2), and so on.
-      It never overwrites a file.
-
-GitHub patterns used, not copied whole:
-    - Cosmosynth/DownLSort:
-      sort by category, preview first,
-      confirm, then move, never overwrite.
-      https://github.com/Cosmosynth/DownLSort
-    - MRAVLM/Smart-File-Organizer:
-      extension table, Images, Documents,
-      Videos, Music, Code, Archives, Others.
-      https://github.com/MRAVLM/
-      smart-file-organizer
-    - eericstephh/SmartSort:
-      never overwrite, conflicts become
-      photo (1).jpg, skip in-progress files.
-      https://github.com/eericstephh/SmartSort
-"""
-
 import shutil
 from pathlib import Path
 
-
 CATEGORIES = {
-    "Images": {".jpg", ".jpeg", ".png", ".gif",
-               ".bmp", ".webp", ".svg", ".heic"},
-    "Documents": {".pdf", ".doc", ".docx", ".txt",
-                  ".md", ".xls", ".xlsx", ".ppt",
-                  ".pptx", ".csv", ".epub", ".odt"},
-    "Videos": {".mp4", ".mkv", ".avi", ".mov",
-               ".webm", ".wmv", ".flv"},
-    "Music": {".mp3", ".wav", ".flac", ".m4a",
-              ".aac", ".ogg", ".wma"},
-    "Archives": {".zip", ".rar", ".7z", ".tar",
-                 ".gz", ".iso", ".dmg"},
-    "Code": {".py", ".js", ".html", ".css",
-             ".cpp", ".c", ".java", ".json"},
+    "Images": {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".bmp",
+        ".webp",
+        ".svg",
+        ".heic",
+    },
+    "Documents": {
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".txt",
+        ".md",
+        ".xls",
+        ".xlsx",
+        ".ppt",
+        ".pptx",
+        ".csv",
+        ".epub",
+        ".odt",
+    },
+    "Videos": {".mp4", ".mkv", ".avi", ".mov", ".webm", ".wmv", ".flv"},
+    "Music": {".mp3", ".wav", ".flac", ".m4a", ".aac", ".ogg", ".wma"},
+    "Archives": {".zip", ".rar", ".7z", ".tar", ".gz", ".iso", ".dmg"},
+    "Code": {".py", ".js", ".html", ".css", ".cpp", ".c", ".java", ".json"},
 }
 
 SKIP = {".crdownload", ".part", ".partial", ".tmp"}
 
 
 def category_for(path):
-    """Return the folder name for a file."""
     suffix = path.suffix.lower()
     for name, suffixes in CATEGORIES.items():
         if suffix in suffixes:
@@ -71,7 +44,6 @@ def category_for(path):
 
 
 def free_name(folder, name):
-    """Find a free name, adding (1), (2) if needed."""
     target = folder / name
     if not target.exists():
         return target
@@ -79,15 +51,13 @@ def free_name(folder, name):
     suffix = Path(name).suffix
     number = 1
     while True:
-        target = folder / (stem + " (" + str(number) +
-                           ")" + suffix)
+        target = folder / (stem + " (" + str(number) + ")" + suffix)
         if not target.exists():
             return target
         number += 1
 
 
 def main():
-    """Preview the moves, ask, then move files."""
     print("Downloads and Desktop Organizer")
     print()
     print("1 - Downloads")
@@ -129,8 +99,7 @@ def main():
     for path, target_folder in moves:
         print("  ", path.name, "->", target_folder.name)
     print()
-    print("This moves", len(moves), "files. "
-          "Nothing is deleted.")
+    print("This moves", len(moves), "files. Nothing is deleted.")
     print()
 
     answer = input("Move these files? Type yes to go: ")

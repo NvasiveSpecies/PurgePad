@@ -1,47 +1,3 @@
-#!/usr/bin/env python3
-"""One-Click Maintenance - Tool 6.
-
-Does the safe clean-up jobs in one go, with
-one yes at the start:
-    1. Cleans temp and junk files.
-    2. Shows how much free space you have.
-    3. Counts the apps that start at login.
-
-How to run:
-    Windows: py one_click_maintenance.py
-    Mac / Linux: python3 one_click_maintenance.py
-
-Safety:
-    - Shows a preview first, asks you to
-      type yes once before deleting anything.
-    - Deletes temp files only, never folders,
-      never your documents or photos.
-    - Does not turn off startup apps, it
-      only counts them. Use Tool 2 to turn
-      one off.
-    - No registry cleaner, no driver updater,
-      no RAM booster, no speed promises.
-      Only real numbers: files deleted and
-      space freed.
-
-GitHub patterns used, not copied whole:
-    - Darkos-Windows-Utility-Tool-DWUT:
-      one-click tune-up in a safe order,
-      clean temp files first, show freed
-      space per file.
-      https://github.com/Darko-Development/
-      Darkos-Windows-Utility-Tool-DWUT
-    - krezio/roomy:
-      read-only scan first, nothing deleted
-      until you click clean up, safe files
-      only.
-      https://github.com/krezio/roomy
-    - jothank/pitcrew:
-      cleanup with sizes shown first,
-      facts only, no score.
-      https://github.com/jothank/pitcrew
-"""
-
 import os
 import platform
 import shutil
@@ -50,12 +6,10 @@ from pathlib import Path
 
 
 def show_size(size):
-    """Show a size in MB, with one decimal."""
     return str(round(size / 1024 / 1024, 1)) + " MB"
 
 
 def get_temp_folders():
-    """Return the temp folders for this system."""
     folders = []
     system = platform.system()
     if system == "Windows":
@@ -86,7 +40,6 @@ def get_temp_folders():
 
 
 def count_startup():
-    """Count startup apps, without changing them."""
     system = platform.system()
     if system == "Linux":
         folder = Path.home() / ".config" / "autostart"
@@ -109,12 +62,11 @@ def count_startup():
 
 
 def main():
-    """Preview, ask once, then clean temp files."""
     print("One-Click Maintenance")
     print("System:", platform.system())
     print()
 
-    total, used, free = shutil.disk_usage(Path.home())
+    _total, _used, free = shutil.disk_usage(Path.home())
     print("Free space before:", show_size(free))
     print()
 
@@ -129,8 +81,7 @@ def main():
                     continue
 
     size = sum(item[1] for item in junk)
-    print("Temp files found:", len(junk),
-          "-", show_size(size))
+    print("Temp files found:", len(junk), "-", show_size(size))
     for path, item_size in junk[:10]:
         print("  ", show_size(item_size), "-", path)
     if len(junk) > 10:
@@ -140,8 +91,7 @@ def main():
     if not junk:
         print("Nothing to clean.")
     else:
-        answer = input("Clean these temp files? "
-                       "Type yes to go: ")
+        answer = input("Clean these temp files? Type yes to go: ")
         if answer.strip().lower() != "yes":
             print("Stopped. Nothing was deleted.")
             return
@@ -154,15 +104,14 @@ def main():
                 done += 1
             except OSError:
                 continue
-        print("Deleted:", done, "files, freed",
-              show_size(freed))
+        print("Deleted:", done, "files, freed", show_size(freed))
     print()
 
     print("Startup apps at login:", count_startup())
     print("Use Tool 2 if you want to turn one off.")
     print()
 
-    total, used, free = shutil.disk_usage(Path.home())
+    _total, _used, free = shutil.disk_usage(Path.home())
     print("Free space now:", show_size(free))
     print("Done.")
 

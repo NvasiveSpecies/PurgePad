@@ -1,7 +1,7 @@
 PurgePad - start here
 
-1. Unzip this folder.
-2. Double-click PurgePad.exe.
-3. Pick a tab, hit Run, type your answer in the box.
+1. Install Python 3 from python.org, if you don't have it.
+2. Unzip this folder.
+3. Double-click run_gui.bat on Windows, or run_gui.sh on Mac / Linux.
 
-No Python to install. Nothing else to set up.
+That's it. Pick a tab, hit Run, type your answer in the box.

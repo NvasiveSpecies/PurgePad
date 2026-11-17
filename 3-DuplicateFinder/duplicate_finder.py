@@ -1,59 +1,15 @@
-#!/usr/bin/env python3
-"""Duplicate and Large-File Finder - Tool 3.
-
-Finds the biggest files in a folder, and finds
-exact duplicate files. A duplicate is only
-called a duplicate when the file size and the
-full SHA-256 hash match, not just the name.
-
-How to run:
-    Windows: py duplicate_finder.py
-    Mac / Linux: python3 duplicate_finder.py
-
-Safety:
-    - It only looks, it does not delete unless
-      you type yes.
-    - Large files are only listed, never
-      deleted by this tool.
-    - For duplicates, it keeps the first copy
-      and only offers to delete the extra copies.
-    - It reads files in 1 MB chunks, so big
-      files do not use up all the memory.
-
-GitHub patterns used, not copied whole:
-    - CleanSweep (Jeffrin-dev/CleanSweep):
-      group by size first, then partial
-      SHA-256, then full SHA-256 in 1 MB
-      chunks. Only identical full hashes
-      are duplicates.
-      https://github.com/Jeffrin-dev/CleanSweep
-    - MugdhoAI/duplicate-file-finder:
-      staged check, size, partial hash,
-      full hash, standard library only.
-      https://github.com/MugdhoAI/
-      duplicate-file-finder
-    - MAliXCS/Duplicate-File-Remover:
-      compare file contents by hash,
-      not just by name.
-      https://github.com/MAliXCS/
-      Duplicate-File-Remover-v1.3
-"""
-
 import hashlib
 from pathlib import Path
-
 
 LARGE_MB = 100
 CHUNK = 1024 * 1024
 
 
 def show_size(size):
-    """Show a size in MB, with one decimal."""
     return str(round(size / 1024 / 1024, 1)) + " MB"
 
 
 def file_hash(path):
-    """Return the SHA-256 hash, in 1 MB chunks."""
     hasher = hashlib.sha256()
     try:
         with open(path, "rb") as handle:
@@ -68,7 +24,6 @@ def file_hash(path):
 
 
 def scan(folder):
-    """Walk a folder, return a list of files."""
     files = []
     for path in folder.rglob("*"):
         if not path.is_file():
@@ -82,12 +37,10 @@ def scan(folder):
 
 
 def main():
-    """Find large files and duplicates, ask first."""
     print("Duplicate and Large-File Finder")
     print()
 
-    text = input("Folder to check? Press Enter for "
-                 "your home folder: ")
+    text = input("Folder to check? Press Enter for your home folder: ")
     if text.strip():
         folder = Path(text.strip()).expanduser()
     else:
@@ -149,12 +102,10 @@ def main():
         print("     Keep:", paths[0])
         to_delete.extend(paths[1:])
     print()
-    print("Extra copies that could be deleted:",
-          len(to_delete))
+    print("Extra copies that could be deleted:", len(to_delete))
     print()
 
-    answer = input("Delete the extra copies? "
-                   "Type yes to go: ")
+    answer = input("Delete the extra copies? Type yes to go: ")
     if answer.strip().lower() != "yes":
         print("Stopped. Nothing was deleted.")
         return
@@ -168,8 +119,7 @@ def main():
             done += 1
         except OSError:
             print("Could not delete:", path)
-    print("Deleted:", done, "files, freed",
-          show_size(freed))
+    print("Deleted:", done, "files, freed", show_size(freed))
     print("Done.")
 
 

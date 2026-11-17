@@ -1,60 +1,16 @@
-#!/usr/bin/env python3
-"""Startup Manager - Tool 2 of the PurgePad.
-
-Lists the apps that start when you log in, on
-Windows, macOS, and Linux. You pick which ones
-to turn off. Turning off never deletes the app,
-it only stops it starting by itself. You can
-turn it back on again.
-
-How to run:
-    Windows: py startup_manager.py
-    Mac / Linux: python3 startup_manager.py
-
-Safety:
-    - Lists your own startup items only.
-    - Shows a preview first, asks before changing
-      anything.
-    - Turning off a file renames it to .disabled,
-      so it can be turned back on.
-    - Turning off a Windows registry entry asks
-      first, and only touches your own Run key.
-
-GitHub patterns used, not copied whole:
-    - pyautostart (PyPI / GitHub):
-      enable / disable per system, Windows
-      Startup folder, macOS LaunchAgent,
-      Linux autostart.
-      https://pypi.org/project/pyautostart/
-    - Microsoft Autoruns (Sysinternals):
-      disable without deleting, so you can
-      turn it back on in one click.
-      https://learn.microsoft.com/sysinternals/
-      downloads/autoruns
-    - NeuralCleave AutostartManager:
-      Windows registry HKCU Run, macOS
-      launchd, Linux systemd user service.
-      https://github.com/TheAmitChandra/
-      NeuralCleave
-"""
-
 import os
 import platform
 from pathlib import Path
 
 
 class StartupItem:
-    """One app that starts at login."""
-
     def __init__(self, name, kind, path, detail=""):
-        """Save the name, kind, path, and detail."""
         self.name = name
         self.kind = kind
         self.path = path
         self.detail = detail
 
     def show(self, number):
-        """Print one numbered line for this item."""
         print(number, "-", self.name)
         print("   ", self.kind, ":", self.path)
         if self.detail:
@@ -62,7 +18,6 @@ class StartupItem:
 
 
 def read_desktop_file(path):
-    """Read a .desktop file, return name and command."""
     name = path.stem
     command = ""
     try:
@@ -78,37 +33,30 @@ def read_desktop_file(path):
 
 
 def get_linux_items():
-    """Find Linux autostart .desktop files."""
     items = []
     folder = Path.home() / ".config" / "autostart"
     if not folder.is_dir():
         return items
     for path in sorted(folder.glob("*.desktop")):
         name, command = read_desktop_file(path)
-        items.append(StartupItem(name, "autostart", path,
-                                 command))
+        items.append(StartupItem(name, "autostart", path, command))
     for path in sorted(folder.glob("*.desktop.disabled")):
-        name = path.name.replace(".desktop.disabled",
-                                 "")
-        items.append(StartupItem(name + " (off)",
-                                 "autostart", path, ""))
+        name = path.name.replace(".desktop.disabled", "")
+        items.append(StartupItem(name + " (off)", "autostart", path, ""))
     return items
 
 
 def get_mac_items():
-    """Find macOS LaunchAgent files."""
     items = []
     folder = Path.home() / "Library" / "LaunchAgents"
     if not folder.is_dir():
         return items
     for path in sorted(folder.glob("*.plist")):
-        items.append(StartupItem(path.stem,
-                                 "LaunchAgent", path, ""))
+        items.append(StartupItem(path.stem, "LaunchAgent", path, ""))
     return items
 
 
 def get_windows_items():
-    """Find Windows startup folder and Run entries."""
     items = []
     appdata = os.environ.get("APPDATA")
     if appdata:
@@ -117,9 +65,9 @@ def get_windows_items():
         folder = folder / "Startup"
         if folder.is_dir():
             for path in sorted(folder.iterdir()):
-                items.append(StartupItem(path.name,
-                                         "Startup folder",
-                                         path, ""))
+                items.append(
+                    StartupItem(path.name, "Startup folder", path, "")
+                )
     try:
         import winreg
     except ImportError:
@@ -127,25 +75,23 @@ def get_windows_items():
     try:
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Windows\CurrentVersion\Run")
+            r"Software\Microsoft\Windows\CurrentVersion\Run",
+        )
     except OSError:
         return items
     index = 0
     while True:
         try:
-            name, value, _kind = winreg.EnumValue(key,
-                                                  index)
+            name, value, _kind = winreg.EnumValue(key, index)
         except OSError:
             break
-        items.append(StartupItem(name, "Run key",
-                                 "HKCU Run", value))
+        items.append(StartupItem(name, "Run key", "HKCU Run", value))
         index += 1
     winreg.CloseKey(key)
     return items
 
 
 def get_items():
-    """Return the startup items for this system."""
     system = platform.system()
     if system == "Windows":
         return get_windows_items()
@@ -155,7 +101,6 @@ def get_items():
 
 
 def disable_item(item):
-    """Turn off one item, return True if it worked."""
     if item.kind == "Run key":
         try:
             import winreg
@@ -165,7 +110,10 @@ def disable_item(item):
             key = winreg.OpenKey(
                 winreg.HKEY_CURRENT_USER,
                 r"Software\Microsoft\Windows\CurrentVersion"
-                r"\Run", 0, winreg.KEY_SET_VALUE)
+                r"\Run",
+                0,
+                winreg.KEY_SET_VALUE,
+            )
             winreg.DeleteValue(key, item.name)
             winreg.CloseKey(key)
             return True
@@ -177,8 +125,7 @@ def disable_item(item):
             return False
         if path.suffix == ".disabled":
             return False
-        new_path = path.with_suffix(path.suffix +
-                                    ".disabled")
+        new_path = path.with_suffix(path.suffix + ".disabled")
         if str(path).endswith(".desktop"):
             new_path = Path(str(path) + ".disabled")
         path.rename(new_path)
@@ -188,7 +135,6 @@ def disable_item(item):
 
 
 def main():
-    """List startup items, ask, then turn off picks."""
     print("Startup Manager")
     print("System:", platform.system())
     print()
@@ -208,8 +154,9 @@ def main():
     print("It only stops it starting by itself.")
     print()
 
-    answer = input("Type numbers to turn off, like 1,3, "
-                   "or press Enter to stop: ")
+    answer = input(
+        "Type numbers to turn off, like 1,3, or press Enter to stop: "
+    )
     if not answer.strip():
         print("Stopped. Nothing was changed.")
         return
