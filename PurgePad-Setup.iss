@@ -6,6 +6,7 @@ DefaultDirName={autopf}\PurgePad
 DefaultGroupName=PurgePad
 OutputDir=.
 OutputBaseFilename=PurgePad-Setup
+SetupIconFile=PurgePad.ico
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
