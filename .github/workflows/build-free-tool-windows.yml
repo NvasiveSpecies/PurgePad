@@ -1,0 +1,32 @@
+name: Build Free Tool Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-free-tool-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build PC Health Report
+        run: pyinstaller -y --onefile --console --name PurgePad-PC-Health-Report --distpath build/dist-free-tool --workpath build/work-free-tool --specpath build free-tool/pc_health_report.py
+
+      - name: Test free tool exe
+        run: |
+          & .\build\dist-free-tool\PurgePad-PC-Health-Report.exe
+          if (-not (Test-Path .\build\dist-free-tool\pc_health_report.txt)) { throw "pc_health_report.txt was not saved next to the exe" }
+          Get-Content .\build\dist-free-tool\pc_health_report.txt
+
+      - name: Upload free tool exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: PurgePad-PC-Health-Report-Windows
+          path: build/dist-free-tool/PurgePad-PC-Health-Report.exe
