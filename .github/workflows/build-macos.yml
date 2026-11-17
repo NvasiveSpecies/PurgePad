@@ -1,0 +1,72 @@
+name: Build Mac
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller pyautogui
+
+      - name: Build GUI
+        run: pyinstaller -y --onedir --windowed --name PurgePad --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
+
+      - name: Build tools
+        run: |
+          pyinstaller -y --onefile --console --name junk_cleaner --distpath build/dist-tools/1-JunkCleaner --workpath build/work-junk_cleaner --specpath build 1-JunkCleaner/junk_cleaner.py
+          pyinstaller -y --onefile --console --name startup_manager --distpath build/dist-tools/2-StartupManager --workpath build/work-startup_manager --specpath build 2-StartupManager/startup_manager.py
+          pyinstaller -y --onefile --console --name duplicate_finder --distpath build/dist-tools/3-DuplicateFinder --workpath build/work-duplicate_finder --specpath build 3-DuplicateFinder/duplicate_finder.py
+          pyinstaller -y --onefile --console --name disk_space --distpath build/dist-tools/4-DiskSpace --workpath build/work-disk_space --specpath build 4-DiskSpace/disk_space.py
+          pyinstaller -y --onefile --console --name file_organizer --distpath build/dist-tools/5-FileOrganizer --workpath build/work-file_organizer --specpath build 5-FileOrganizer/file_organizer.py
+          pyinstaller -y --onefile --console --name one_click_maintenance --distpath build/dist-tools/6-OneClickMaintenance --workpath build/work-one_click_maintenance --specpath build 6-OneClickMaintenance/one_click_maintenance.py
+          pyinstaller -y --onefile --console --name pc_health_report --distpath build/dist-tools/7-PCHealthReport --workpath build/work-pc_health_report --specpath build 7-PCHealthReport/pc_health_report.py
+
+      - name: Assemble app
+        run: |
+          APP="build/dist-gui/PurgePad.app/Contents/MacOS"
+          for t in 1-JunkCleaner:junk_cleaner 2-StartupManager:startup_manager 3-DuplicateFinder:duplicate_finder 4-DiskSpace:disk_space 5-FileOrganizer:file_organizer 6-OneClickMaintenance:one_click_maintenance 7-PCHealthReport:pc_health_report; do
+            folder="${t%%:*}"; stem="${t##*:}"
+            mkdir -p "$APP/$folder"
+            cp "build/dist-tools/$folder/$stem" "$APP/$folder/"
+          done
+          cp START.txt "$APP/START.txt"
+
+      - name: Test tool exes
+        run: |
+          printf 'no\n' | ./build/dist-gui/PurgePad.app/Contents/MacOS/1-JunkCleaner/junk_cleaner
+          printf '\n' | ./build/dist-gui/PurgePad.app/Contents/MacOS/2-StartupManager/startup_manager
+          printf 'no\n' | ./build/dist-gui/PurgePad.app/Contents/MacOS/6-OneClickMaintenance/one_click_maintenance
+          ./build/dist-gui/PurgePad.app/Contents/MacOS/7-PCHealthReport/pc_health_report
+
+      - name: GUI interaction test on Mac
+        env:
+          PURGEPAD_DUP_FOLDER: /tmp/dup_test
+          PURGEPAD_ORG_FOLDER: /tmp/org_test
+        run: |
+          mkdir -p /tmp/dup_test /tmp/org_test
+          echo hello > /tmp/dup_test/a.txt
+          cp /tmp/dup_test/a.txt /tmp/dup_test/b.txt
+          echo x > /tmp/org_test/photo.jpg
+          echo y > /tmp/org_test/note.txt
+          python gui_test.py build/dist-gui/PurgePad.app/Contents/MacOS/PurgePad screenshots-mac
+
+      - name: Upload Mac GUI test screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: PurgePad-Mac-GUI-Test
+          path: screenshots-mac/
+
+      - name: Upload Mac app
+        uses: actions/upload-artifact@v4
+        with:
+          name: PurgePad-Mac
+          path: build/dist-gui/PurgePad.app
