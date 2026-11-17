@@ -26,8 +26,8 @@ DARKER = "#161616"
 LIGHT = "#e8e8e8"
 GREY = "#9a9a9a"
 ACCENT = "#00D5FF"
-ACCENT_HOVER = "#4DE3FF"
-ACCENT_TEXT = "#04222E"
+ACCENT_HOVER = "#33E0FF"
+ACCENT_TEXT = "#0B1F2A"
 INACTIVE = "#2A2A2A"
 INACTIVE_HOVER = "#3A3A3A"
 
@@ -316,6 +316,15 @@ def main():
     root.configure(bg=DARK)
     root.overrideredirect(True)
     import os as _os
+
+    try:
+        _icon = BASE / "purgepad-icon.png"
+        if _icon.exists():
+            _photo = tk.PhotoImage(file=str(_icon))
+            root.iconphoto(True, _photo)
+            root._icon_photo = _photo
+    except (tk.TclError, OSError):
+        pass
 
     if _os.environ.get("TOOLS_PACK_NO_ALPHA") != "1":
         try:
