@@ -270,6 +270,7 @@ class ToolTab(tk.Frame):
             return
         thread = threading.Thread(target=self._read, daemon=True)
         thread.start()
+        self.entry.focus_force()
 
     def _read(self):
         for line in self.process.stdout:
