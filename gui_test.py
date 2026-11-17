@@ -16,7 +16,11 @@ ORG = os.environ.get("PURGEPAD_ORG_FOLDER", "/tmp/org_test")
 
 
 def shot(name):
-    pyautogui.screenshot(str(OUT / name))
+    path = str(OUT / name)
+    if sys.platform == "darwin":
+        subprocess.run(["screencapture", "-x", path], check=False)
+    else:
+        pyautogui.screenshot(path)
 
 
 def click_run():

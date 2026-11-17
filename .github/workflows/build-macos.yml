@@ -15,7 +15,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install PyInstaller
-        run: pip install pyinstaller pyautogui
+        run: python -m pip install pyinstaller pyautogui pillow
 
       - name: Build GUI
         run: pyinstaller -y --onedir --windowed --name PurgePad --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
