@@ -1,3 +1,4 @@
+import ctypes
 import os
 import platform
 import shutil
@@ -19,21 +20,54 @@ def show_size(size):
 
 def memory_info():
     path = Path("/proc/meminfo")
-    if not path.is_file():
-        return "Memory: not shown on this system"
-    total = 0
-    free = 0
-    try:
-        for line in path.read_text().splitlines():
-            if line.startswith("MemTotal:"):
-                total = int(line.split()[1]) * 1024
-            if line.startswith("MemAvailable:"):
-                free = int(line.split()[1]) * 1024
-    except (OSError, ValueError):
-        return "Memory: could not be read"
-    if not total:
-        return "Memory: could not be read"
-    return "Memory total: " + show_size(total) + ", free: " + show_size(free)
+    if path.is_file():
+        total = 0
+        free = 0
+        try:
+            for line in path.read_text().splitlines():
+                if line.startswith("MemTotal:"):
+                    total = int(line.split()[1]) * 1024
+                if line.startswith("MemAvailable:"):
+                    free = int(line.split()[1]) * 1024
+        except (OSError, ValueError):
+            return "Memory: could not be read"
+        if not total:
+            return "Memory: could not be read"
+        return (
+            "Memory total: " + show_size(total) + ", free: " + show_size(free)
+        )
+    if platform.system() == "Windows":
+        try:
+
+            class MemoryStatus(ctypes.Structure):
+                _fields_ = [
+                    ("length", ctypes.c_ulong),
+                    ("memory_load", ctypes.c_ulong),
+                    ("total_phys", ctypes.c_ulonglong),
+                    ("avail_phys", ctypes.c_ulonglong),
+                    ("total_page", ctypes.c_ulonglong),
+                    ("avail_page", ctypes.c_ulonglong),
+                    ("total_virtual", ctypes.c_ulonglong),
+                    ("avail_virtual", ctypes.c_ulonglong),
+                    ("avail_extended_virtual", ctypes.c_ulonglong),
+                ]
+
+            status = MemoryStatus()
+            status.length = ctypes.sizeof(MemoryStatus)
+            ok = ctypes.windll.kernel32.GlobalMemoryStatusEx(
+                ctypes.byref(status)
+            )
+            if not ok:
+                return "Memory: could not be read"
+            return (
+                "Memory total: "
+                + show_size(status.total_phys)
+                + ", free: "
+                + show_size(status.avail_phys)
+            )
+        except (AttributeError, OSError):
+            return "Memory: could not be read"
+    return "Memory: not shown on this system"
 
 
 def temp_info():
@@ -135,7 +169,10 @@ def main():
 
     text = "\n".join(lines)
     print(text)
-    out = Path(__file__).parent / "pc_health_report.txt"
+    if getattr(sys, "frozen", False):
+        out = Path(sys.executable).parent / "pc_health_report.txt"
+    else:
+        out = Path(__file__).parent / "pc_health_report.txt"
     out.write_text(text + "\n", encoding="utf-8")
     print()
     print("Saved to:", out)
