@@ -33,7 +33,13 @@ def shot(name):
             ["powershell", "-NoProfile", "-Command", ps], check=False
         )
     else:
-        pyautogui.screenshot(path)
+        try:
+            pyautogui.screenshot(path)
+        except Exception:
+            from mss import mss
+
+            with mss() as s:
+                s.shot(output=path)
 
 
 def click_run():
@@ -61,6 +67,23 @@ tabs = [
     ("oneclick", 685, [("no",)]),
     ("health", 810, []),
 ]
+def check_gui_alive(step):
+    if proc.poll() is not None:
+        raise SystemExit(f"FAIL: GUI closed during {step}")
+
+
+def check_exists(path, step):
+    if not Path(path).exists():
+        raise SystemExit(f"FAIL: {step}: missing {path}")
+    print("ok:", step, path, flush=True)
+
+
+def check_missing(path, step):
+    if Path(path).exists():
+        raise SystemExit(f"FAIL: {step}: still there {path}")
+    print("ok:", step, "gone", path, flush=True)
+
+
 for name, x, answers in tabs:
     pyautogui.click(x, 65)
     time.sleep(1)
@@ -69,6 +92,19 @@ for name, x, answers in tabs:
         answer(text)
     time.sleep(1)
     shot(f"gui_{name}.png")
+    check_gui_alive(name)
+    if name == "duplicate":
+        check_exists(Path(DUP) / "a.txt", "duplicate keeps a")
+        check_exists(Path(DUP) / "b.txt", "duplicate keeps b")
+    if name == "diskspace":
+        check_exists(Path(DUP) / "a.txt", "diskspace keeps a")
+        check_exists(Path(DUP) / "b.txt", "diskspace keeps b")
+    if name == "organizer":
+        check_exists(Path(ORG) / "Images" / "photo.jpg", "organizer moved photo")
+        check_exists(Path(ORG) / "Documents" / "note.txt", "organizer moved note")
+        check_missing(Path(ORG) / "photo.jpg", "organizer moved photo")
+        check_missing(Path(ORG) / "note.txt", "organizer moved note")
     print("done tab", name, flush=True)
+check_gui_alive("all tabs")
 proc.terminate()
-print("ALL TABS DONE")
+print("ALL TABS DONE - GUI OPERATED OK")
