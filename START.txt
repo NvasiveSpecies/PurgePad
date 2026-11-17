@@ -1,0 +1,7 @@
+PC Tools Pack - start here
+
+1. Install Python 3 from python.org, if you don't have it.
+2. Unzip this folder.
+3. Double-click run_gui.bat on Windows, or run_gui.sh on Mac / Linux.
+
+That's it. Pick a tab, hit Run, type your answer in the box.
