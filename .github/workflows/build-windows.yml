@@ -18,7 +18,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build GUI
-        run: pyinstaller -y --onedir --windowed --name PC-Tools-Pack --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
+        run: pyinstaller -y --onedir --windowed --name PurgePad --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
 
       - name: Build tools
         run: |
@@ -32,36 +32,36 @@ jobs:
 
       - name: Assemble pack
         run: |
-          New-Item -ItemType Directory -Force -Path PC-Tools-Pack | Out-Null
-          Copy-Item -Recurse -Force build/dist-gui/PC-Tools-Pack/* PC-Tools-Pack/
+          New-Item -ItemType Directory -Force -Path PurgePad | Out-Null
+          Copy-Item -Recurse -Force build/dist-gui/PurgePad/* PurgePad/
           $tools = @("1-JunkCleaner/junk_cleaner", "2-StartupManager/startup_manager", "3-DuplicateFinder/duplicate_finder", "4-DiskSpace/disk_space", "5-FileOrganizer/file_organizer", "6-OneClickMaintenance/one_click_maintenance", "7-PCHealthReport/pc_health_report")
           foreach ($t in $tools) {
             $folder = $t.Split("/")[0]
             $stem = $t.Split("/")[1]
-            New-Item -ItemType Directory -Force -Path "PC-Tools-Pack/$folder" | Out-Null
-            Copy-Item "build/dist-tools/$folder/$stem.exe" "PC-Tools-Pack/$folder/"
+            New-Item -ItemType Directory -Force -Path "PurgePad/$folder" | Out-Null
+            Copy-Item "build/dist-tools/$folder/$stem.exe" "PurgePad/$folder/"
           }
-          Copy-Item START.txt PC-Tools-Pack/START.txt
+          Copy-Item START.txt PurgePad/START.txt
 
       - name: Test tool exes
         run: |
-          "no" | & .\PC-Tools-Pack\1-JunkCleaner\junk_cleaner.exe
-          "" | & .\PC-Tools-Pack\2-StartupManager\startup_manager.exe
-          "no" | & .\PC-Tools-Pack\6-OneClickMaintenance\one_click_maintenance.exe
-          & .\PC-Tools-Pack\7-PCHealthReport\pc_health_report.exe
+          "no" | & .\PurgePad\1-JunkCleaner\junk_cleaner.exe
+          "" | & .\PurgePad\2-StartupManager\startup_manager.exe
+          "no" | & .\PurgePad\6-OneClickMaintenance\one_click_maintenance.exe
+          & .\PurgePad\7-PCHealthReport\pc_health_report.exe
 
       - name: Test GUI exe
-        run: .\PC-Tools-Pack\PC-Tools-Pack.exe --screenshot-test
+        run: .\PurgePad\PurgePad.exe --screenshot-test
 
       - name: Build installer
         run: |
           choco install innosetup -y
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" PC-Tools-Pack-Setup.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" PurgePad-Setup.iss
 
       - name: Upload Windows pack
         uses: actions/upload-artifact@v4
         with:
-          name: PC-Tools-Pack-Windows
+          name: PurgePad-Windows
           path: |
-            PC-Tools-Pack-Setup.exe
-            PC-Tools-Pack/
+            PurgePad-Setup.exe
+            PurgePad/

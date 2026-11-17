@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Startup Manager - Tool 2 of the PC Tools Pack.
+"""Startup Manager - Tool 2 of the PurgePad.
 
 Lists the apps that start when you log in, on
 Windows, macOS, and Linux. You pick which ones

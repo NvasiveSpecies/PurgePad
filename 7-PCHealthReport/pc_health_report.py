@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PC Health Report - Tool 7 of the PC Tools Pack.
+"""PC Health Report - Tool 7 of the PurgePad.
 
 Prints a plain report of facts about your
 computer, and saves it to a text file.

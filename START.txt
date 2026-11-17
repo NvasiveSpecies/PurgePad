@@ -1,7 +1,7 @@
-PC Tools Pack - start here
+PurgePad - start here
 
 1. Unzip this folder.
-2. Double-click PC-Tools-Pack.exe.
+2. Double-click PurgePad.exe.
 3. Pick a tab, hit Run, type your answer in the box.
 
 No Python to install. Nothing else to set up.

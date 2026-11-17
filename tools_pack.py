@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PC Tools Pack - GUI launcher.
+"""PurgePad - GUI launcher.
 
 One window for all 7 tools. No borders,
 rounded corners, dark theme, 90% see-through.
@@ -44,7 +44,7 @@ import threading
 import tkinter as tk
 from pathlib import Path
 
-VERSION = "Mint v2"
+VERSION = "v1"
 # When packed as an .exe / app, there is no
 # Python for the user to install. The tools
 # are packed as their own .exe files next to
@@ -297,7 +297,7 @@ def main():
         print("No screen found. Run it on a computer "
               "with a screen.")
         return
-    root.title("PC Tools Pack - " + VERSION)
+    root.title("PurgePad - " + VERSION)
     root.geometry("900x620")
     root.configure(bg=DARK)
     root.overrideredirect(True)
@@ -310,7 +310,7 @@ def main():
 
     top = tk.Frame(root, bg=DARKER, height=38)
     top.pack(fill="x")
-    title = tk.Label(top, text="PC Tools Pack  •  " +
+    title = tk.Label(top, text="PurgePad  •  " +
                      VERSION, bg=DARKER,
                      fg=LIGHT, font=("Arial", 12, "bold"))
     title.pack(side="left", padx=16, pady=8)

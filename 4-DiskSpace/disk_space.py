@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Disk Space Analyser - Tool 4 of the PC Tools Pack.
+"""Disk Space Analyser - Tool 4 of the PurgePad.
 
 Shows how much space you have left, which
 folders are using the most space, which files

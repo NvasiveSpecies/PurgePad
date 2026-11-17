@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Junk Cleaner - Tool 1 of the PC Tools Pack.
+"""Junk Cleaner - Tool 1 of the PurgePad.
 
 Cleans temporary files on Windows, macOS, and Linux.
 Python 3 only, standard library only, no extra installs.
