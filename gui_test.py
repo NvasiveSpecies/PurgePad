@@ -50,8 +50,11 @@ def click_run():
 
 def answer(text):
     pyautogui.click(400, 585 + Y_OFF)
+    time.sleep(0.5)
+    pyautogui.click(400, 585 + Y_OFF)
+    time.sleep(0.5)
     if text:
-        pyautogui.typewrite(text, interval=0.04)
+        pyautogui.typewrite(text, interval=0.08)
     pyautogui.press("enter")
     time.sleep(2)
 
