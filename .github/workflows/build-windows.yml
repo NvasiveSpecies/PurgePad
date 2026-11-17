@@ -46,12 +46,12 @@ jobs:
       - name: Test tool exes
         run: |
           "no" | & .\PC-Tools-Pack\1-JunkCleaner\junk_cleaner.exe
-          & .\PC-Tools-Pack\2-StartupManager\startup_manager.exe
+          "" | & .\PC-Tools-Pack\2-StartupManager\startup_manager.exe
           "no" | & .\PC-Tools-Pack\6-OneClickMaintenance\one_click_maintenance.exe
           & .\PC-Tools-Pack\7-PCHealthReport\pc_health_report.exe
 
-      - name: Test GUI exe (no screen)
-        run: .\PC-Tools-Pack\PC-Tools-Pack.exe
+      - name: Test GUI exe
+        run: .\PC-Tools-Pack\PC-Tools-Pack.exe --screenshot-test
 
       - name: Build installer
         run: |
