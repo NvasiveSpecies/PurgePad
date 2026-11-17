@@ -13,6 +13,7 @@ OUT = Path(sys.argv[2])
 OUT.mkdir(parents=True, exist_ok=True)
 DUP = os.environ.get("PURGEPAD_DUP_FOLDER", "/tmp/dup_test")
 ORG = os.environ.get("PURGEPAD_ORG_FOLDER", "/tmp/org_test")
+Y_OFF = 62 if sys.platform == "darwin" else 0
 
 
 def shot(name):
@@ -43,12 +44,12 @@ def shot(name):
 
 
 def click_run():
-    pyautogui.click(130, 155)
+    pyautogui.click(130, 155 + Y_OFF)
     time.sleep(2)
 
 
 def answer(text):
-    pyautogui.click(400, 585)
+    pyautogui.click(400, 585 + Y_OFF)
     if text:
         pyautogui.typewrite(text, interval=0.04)
     pyautogui.press("enter")
@@ -85,7 +86,7 @@ def check_missing(path, step):
 
 
 for name, x, answers in tabs:
-    pyautogui.click(x, 65)
+    pyautogui.click(x, 65 + Y_OFF)
     time.sleep(1)
     click_run()
     for (text,) in answers:
