@@ -17,7 +17,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build GUI
-        run: pyinstaller -y --onedir --windowed --name PurgePad --icon PurgePad.ico --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
+        run: pyinstaller -y --onedir --windowed --name PurgePad --icon ../PurgePad.ico --distpath build/dist-gui --workpath build/work-gui --specpath build tools_pack.py
 
       - name: Build tools
         run: |
