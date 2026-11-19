@@ -78,7 +78,7 @@ shot("gui_open.png")
 tabs = [
     ("junk", 68, [("no",)]),
     ("startup", 185, []),
-    ("duplicate", 310, [(DUP,), ("no",)]),
+    ("duplicate", 310, [(DUP,), ("",), ("no",)]),
     ("diskspace", 435, [(DUP,), ("",)]),
     ("organizer", 560, [("3",), (ORG,), ("yes",)]),
     ("oneclick", 685, [("no",)]),

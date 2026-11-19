@@ -159,10 +159,21 @@ def main():
     for size, paths in groups:
         paths.sort(key=lambda p: p.resolve() not in link_targets)
         print("  ", show_size(size), "each:")
-        for path in paths:
-            print("    ", path)
-        print("     Keep:", paths[0])
-        for path in paths[1:]:
+        for number, path in enumerate(paths, 1):
+            print("    ", number, "-", path)
+        keep = 0
+        pick = input(
+            "Which one stays? Type the number, or press Enter "
+            "to keep the first: "
+        )
+        if pick.strip().isdigit():
+            number = int(pick.strip())
+            if 1 <= number <= len(paths):
+                keep = number - 1
+        print("     Keep:", paths[keep])
+        for index, path in enumerate(paths):
+            if index == keep:
+                continue
             try:
                 if path.resolve() in link_targets:
                     continue
