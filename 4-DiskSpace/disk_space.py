@@ -18,7 +18,10 @@ def folder_size(folder):
     for path in folder.rglob("*"):
         if path.is_file():
             try:
-                total += path.stat().st_size
+                if path.is_symlink():
+                    total += path.lstat().st_size
+                else:
+                    total += path.stat().st_size
             except OSError:
                 continue
     return total
@@ -65,7 +68,11 @@ def main():
     for path in folder.rglob("*"):
         if path.is_file():
             try:
-                files.append((path, path.stat().st_size))
+                if path.is_symlink():
+                    size = path.lstat().st_size
+                else:
+                    size = path.stat().st_size
+                files.append((path, size))
             except OSError:
                 continue
     files.sort(key=lambda item: item[1], reverse=True)

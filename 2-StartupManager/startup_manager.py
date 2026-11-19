@@ -109,11 +109,17 @@ def disable_item(item):
         try:
             key = winreg.OpenKey(
                 winreg.HKEY_CURRENT_USER,
-                r"Software\Microsoft\Windows\CurrentVersion"
-                r"\Run",
+                r"Software\Microsoft\Windows\CurrentVersion\Run",
                 0,
-                winreg.KEY_SET_VALUE,
+                winreg.KEY_READ | winreg.KEY_SET_VALUE,
             )
+            value, kind = winreg.QueryValueEx(key, item.name)
+            backup = winreg.CreateKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\PurgePad\StartupBackup",
+            )
+            winreg.SetValueEx(backup, item.name, 0, kind, value)
+            winreg.CloseKey(backup)
             winreg.DeleteValue(key, item.name)
             winreg.CloseKey(key)
             return True
@@ -128,6 +134,8 @@ def disable_item(item):
         new_path = path.with_suffix(path.suffix + ".disabled")
         if str(path).endswith(".desktop"):
             new_path = Path(str(path) + ".disabled")
+        if new_path.exists():
+            return False
         path.rename(new_path)
         return True
     except (OSError, PermissionError):
